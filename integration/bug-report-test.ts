@@ -49,16 +49,32 @@ beforeAll(async () => {
             <div>
               {data}
               <Link to="/burgers">Other Route</Link>
+              <Link to="/@a">Broken Route</Link>
             </div>
           )
         }
       `,
-
-      "app/routes/burgers.jsx": js`
+      "app/routes/a.jsx": js`
         export default function Index() {
-          return <div>cheeseburger</div>;
+          return <div>Route with a.</div>;
         }
       `,
+      "app/routes/a@.jsx": js`
+        export default function Index() {
+          return <div>Route with a@.</div>;
+        }
+      `,
+      "app/routes/@.jsx": js`
+        export default function Index() {
+          return <div>Route with @.</div>;
+        }
+      `,
+      "app/routes/@a.jsx": js`
+        export default function Index() {
+          return <div>Route with @a.</div>;
+        }
+      `,
+
     },
   });
 
@@ -79,9 +95,18 @@ it("[description of what you expect it to do]", async () => {
   expect(await response.text()).toMatch("pizza");
 
   // If you need to test interactivity use the `app`
-  await app.goto("/");
-  await app.clickLink("/burgers");
-  expect(await app.getHtml()).toMatch("cheeseburger");
+  await app.goto("/a");
+  expect(await app.getHtml()).toMatch("Route with a.");
+
+  await app.goto("/a@");
+  expect(await app.getHtml()).toMatch("Route with a@.");
+
+  await app.goto("/@");
+  expect(await app.getHtml()).toMatch("Route with @.");
+
+  await app.goto("/@a");
+  expect(await app.getHtml()).toMatch("Route with @a.");
+
 
   // If you're not sure what's going on, you can "poke" the app, it'll
   // automatically open up in your browser for 20 seconds, so be quick!
